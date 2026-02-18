@@ -1,0 +1,29 @@
+﻿@model Mascota
+
+<h1>Ejemplos Session</h1>
+
+<h2 style="color:blue">Nombre Session: @Context.Session.GetString("nombre")</h2>
+<h2 style="color:red">Hora Session: @Context.Session.GetString("hora")</h2>
+
+@if (Model != null)
+{
+    <h2>Mascota</h2>
+
+    <ul class="list-group">
+        <li class="list-group-item">@Model.Nombre</li>
+        <li class="list-group-item">@Model.Raza</li>
+        <li class="list-group-item">@Model.Edad</li>
+    </ul>
+}
+
+<ul class="list-group">
+    <li class="list-group-item">
+        <a asp-controller="EjemploSession" asp-action="SessionSimple">Session Simple</a>
+    </li>
+    <li class="list-group-item">
+        <a asp-controller="EjemploSession" asp-action="SessionMascotaBytes">Session Mascota Bytes</a>
+    </li>
+    <li class="list-group-item">
+        <a asp-controller="EjemploSession" asp-action="SessionMascotaCollectionBytes">Session Mascotas Bytes</a>
+    </li>
+</ul>
