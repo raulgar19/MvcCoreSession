@@ -1,24 +1,26 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MvcCoreSession.Extensions;
 using MvcCoreSession.Helpers;
 using MvcCoreSession.Models;
+using System;
 
 namespace MvcCoreSession.Controllers
 {
     public class EjemploSessionController : Controller
     {
+        HelperSessionContextAccessor helper;
+
+        public EjemploSessionController(HelperSessionContextAccessor helper)
+        {
+            this.helper = helper;
+        }
+
         public IActionResult Index()
         {
-            byte[] data = HttpContext.Session.Get("MASCOTA");
+            List<Mascota> mascotas = this.helper.GetMascotasSession();
 
-            if (data != null)
-            {
-                Mascota mascota = (Mascota) HelperBinarySession.ByteToObject(data);
-
-                return View(mascota); 
-            }
-
-            return View();
+            return View(mascotas);
         }
 
         public IActionResult SessionSimple(string accion)
@@ -99,6 +101,93 @@ namespace MvcCoreSession.Controllers
 
                     List<Mascota> mascotas = (List<Mascota>) HelperBinarySession.ByteToObject(data);
                     
+                    return View(mascotas);
+                }
+            }
+            return View();
+        }
+
+        public IActionResult SessionMascotaJson(string accion)
+        {
+            if (accion != null)
+            {
+                if (accion.ToLower() == "almacenar")
+                {
+                    Mascota mascota = new Mascota();
+
+                    mascota.Nombre = "Eva";
+                    mascota.Raza = "Exploradora";
+                    mascota.Edad = 18;
+
+                    string mascotaJson = HelperJsonSession.SerializeObject(mascota);
+
+                    HttpContext.Session.SetString("MASCOTAJSON", mascotaJson);
+
+                    ViewData["MENSAJE"] = "Mascota almacenada en Session";
+                }
+
+                else if (accion.ToLower() == "mostrar")
+                {
+                    string mascotaJson = HttpContext.Session.GetString("MASCOTAJSON");
+
+                    Mascota mascota = HelperJsonSession.DeserializeObject<Mascota>(mascotaJson);
+
+                    ViewData["MASCOTA"] = mascota;
+                }
+            }
+            return View();
+        }
+
+        public IActionResult SessionMascotaGeneric(string accion)
+        {
+            if (accion != null)
+            {
+                if (accion.ToLower() == "almacenar")
+                {
+                    Mascota mascota = new Mascota();
+
+                    mascota.Nombre = "Fujur";
+                    mascota.Raza = "Dragón";
+                    mascota.Edad = 33;
+
+                    HttpContext.Session.SetObject("MASCOTAGENERIC", mascota);
+
+                    ViewData["MENSAJE"] = "Mascota almacenada en Session";
+                }
+
+                else if (accion.ToLower() == "mostrar")
+                {
+                    Mascota mascota = HttpContext.Session.GetObject<Mascota>("MASCOTAGENERIC");
+
+                    ViewData["MASCOTA"] = mascota;
+                }
+            }
+            return View();
+        }
+
+        public IActionResult SessionMascotaCollectionGeneric(string accion)
+        {
+            if (accion != null)
+            {
+                if (accion.ToLower() == "almacenar")
+                {
+                    List<Mascota> mascotas = new List<Mascota>
+                    {
+                        new Mascota{Nombre = "Slinky", Raza = "Perrito", Edad = 21},
+                        new Mascota{Nombre = "Rex", Raza = "Dino", Edad = 24 },
+                        new Mascota{Nombre = "Patricio", Raza = "Estrella de mar", Edad = 23},
+                        new Mascota{Nombre = "Hamm", Raza = "Cerdito", Edad = 14},
+                    };
+
+                    HttpContext.Session.SetObject("MASCOTASGENERIC", mascotas);
+
+                    ViewData["MENSAJE"] = "Colección almacenada correctamente";
+                }
+
+                else if (accion.ToLower() == "mostrar")
+                {
+                    List<Mascota> mascotas = HttpContext.Session.GetObject <List<Mascota>>("MASCOTASGENERIC");
+
                     return View(mascotas);
                 }
             }

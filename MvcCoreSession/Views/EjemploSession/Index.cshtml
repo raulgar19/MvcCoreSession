@@ -1,29 +1,79 @@
-﻿@model Mascota
+﻿@using MvcCoreSession.Helpers
+@model List<Mascota>
+@{
+    Mascota fujur = Context.Session.GetObject<Mascota>("MASCOTAGENERIC");
+
+    string data = Context.Session.GetString("MASCOTAJSON");
+
+    Mascota mascota = null;
+
+    if (Context.Session.Get("MASCOTAJSON") != null)
+    {
+        mascota = HelperJsonSession.DeserializeObject<Mascota>(data);
+    }
+}
 
 <h1>Ejemplos Session</h1>
 
 <h2 style="color:blue">Nombre Session: @Context.Session.GetString("nombre")</h2>
 <h2 style="color:red">Hora Session: @Context.Session.GetString("hora")</h2>
 
-@if (Model != null)
+@if (mascota != null)
 {
-    <h2>Mascota</h2>
+    <h2 style="color:fuchsia">Nombre: @mascota.Nombre, Raza: @mascota.Raza, Edad: @mascota.Edad</h2>
+}
 
-    <ul class="list-group">
-        <li class="list-group-item">@Model.Nombre</li>
-        <li class="list-group-item">@Model.Raza</li>
-        <li class="list-group-item">@Model.Edad</li>
-    </ul>
+@if (fujur != null)
+{
+    <h2 style="color:white;background-color:navy">Nombre: @fujur.Nombre, Raza: @fujur.Raza, Edad: @fujur.Edad</h2>
 }
 
 <ul class="list-group">
     <li class="list-group-item">
         <a asp-controller="EjemploSession" asp-action="SessionSimple">Session Simple</a>
     </li>
-    <li class="list-group-item">
+    <li class="list-group-item list-group-item-danger">
         <a asp-controller="EjemploSession" asp-action="SessionMascotaBytes">Session Mascota Bytes</a>
     </li>
-    <li class="list-group-item">
+    <li class="list-group-item list-group-item-dark">
+        <a asp-controller="EjemploSession" asp-action="SessionMascotaGeneric">Session Mascota Generic</a>
+    </li>
+    <li class="list-group-item list-group-item-warning">
         <a asp-controller="EjemploSession" asp-action="SessionMascotaCollectionBytes">Session Mascotas Bytes</a>
     </li>
+    <li class="list-group-item list-group-item-dark">
+        <a asp-controller="EjemploSession" asp-action="SessionMascotaCollectionGeneric">Session Mascotas Generic</a>
+    </li>
+    <li class="list-group-item list-group-item-dark">
+        <a asp-controller="EjemploSession" asp-action="SessionMascotaJson">Session Mascota JSON</a>
+    </li>
 </ul>
+
+@if (Model != null)
+{
+    <table class="table table-dark">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Raza</th>
+                <th>Edad</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Nombre)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Raza)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Edad)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
